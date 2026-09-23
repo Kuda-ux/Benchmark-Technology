@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Benchmark Technology Website
+
+A modern, premium e-commerce and business website for **Benchmark Technology** — a technology and office-supplies business based in Masvingo, Zimbabwe.
+
+Built with **Next.js 16**, **TypeScript**, **Tailwind CSS v4** and **shadcn/ui**.
+
+## Live Site
+
+- Domain: `www.benchmarktechnology.co.zw`
+- Deployed on [Vercel](https://vercel.com)
+
+## Features
+
+- **Premium brand-first design** built around the Benchmark Technology logo (navy + red).
+- **Responsive** experience for desktop, laptop, tablet and mobile.
+- **Product discovery** with categories, search, filters and sort.
+- **Product pages** with image gallery, specifications, features and related products.
+- **WhatsApp-first enquiry flow** integrated throughout the site.
+- **Enquiry list / quote cart** — add products and send a combined WhatsApp quote request.
+- **Corporate enquiries page** for schools, NGOs, businesses and organisations.
+- **Branch locations** for Masvingo, Chivi and Zvishavane.
+- **SEO-ready** with metadata, Open Graph, sitemap, robots.txt, structured data (LocalBusiness + Product).
+- **Accessibility** optimised: keyboard navigation, focus states, semantic HTML, reduced-motion support.
+- **Performance** optimised: lazy-loaded images, static generation, minimal JS, Core Web Vitals focused.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- npm / pnpm / yarn
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/                  # Next.js App Router pages
+components/           # Reusable React components
+  home/               # Homepage sections
+  layout/             # Navbar, footer, mobile nav
+  shop/               # Product card, grid, filters
+  enquiry/            # Quote/enquiry cart components
+  contact/            # Contact form
+  ui/                 # shadcn/ui components
+lib/                  # Data, utilities, enquiry store
+public/               # Static assets and product images
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is ready to deploy on **Vercel**.
 
-## Deploy on Vercel
+1. Push the repository to GitHub.
+2. Import the project in Vercel.
+3. Use the default Next.js build settings.
+4. Set the environment variable if needed:
+   - `NEXT_PUBLIC_SITE_URL=https://www.benchmarktechnology.co.zw`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contact
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Benchmark Technology**
+- Address: Office No. 1B, Old Mutual Building, Masvingo, Zimbabwe
+- Phone: 039 2266 757 / 078 394 3945 / 071 533 0838
+- Email: benchmarktechnology@hotmail.com
+- Website: www.benchmarktechnology.co.zw
