@@ -1,10 +1,16 @@
 import { ImageResponse } from "next/og";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 export const alt = "Benchmark Technology";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
+  const logoPath = join(process.cwd(), "public", "logo.png");
+  const logoBuffer = readFileSync(logoPath);
+  const logoSrc = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -19,52 +25,18 @@ export default async function Image() {
           padding: 64,
         }}
       >
-        <div
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logoSrc}
+          alt="Benchmark Technology"
+          width={400}
+          height={120}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 24,
+            objectFit: "contain",
             marginBottom: 32,
+            filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.25))",
           }}
-        >
-          <div
-            style={{
-              width: 120,
-              height: 120,
-              borderRadius: 24,
-              background: "#ffffff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span style={{ fontSize: 80, fontWeight: 800, color: "#101b63" }}>
-              B
-            </span>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span
-              style={{
-                fontSize: 64,
-                fontWeight: 800,
-                color: "#ffffff",
-                letterSpacing: -1,
-              }}
-            >
-              Benchmark
-            </span>
-            <span
-              style={{
-                fontSize: 56,
-                fontWeight: 800,
-                color: "#e21b23",
-                letterSpacing: -1,
-              }}
-            >
-              Technology
-            </span>
-          </div>
-        </div>
+        />
         <p
           style={{
             fontSize: 28,

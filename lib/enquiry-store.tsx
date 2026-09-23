@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useSyncExternalStore, useCallback } from "react";
+import { createContext, useContext, useSyncExternalStore, useEffect, useCallback } from "react";
 import type { Product } from "@/lib/data";
 
 type EnquiryItem = {
@@ -24,56 +24,76 @@ const EnquiryContext = createContext<EnquiryContextType | undefined>(undefined);
 
 const STORAGE_KEY = "benchmark-enquiry";
 
-type Listener = () => void;
-const listeners: Set<Listener> = new Set();
-let cachedItems: EnquiryItem[] | null = null;
+function createEnquiryStore() {
+  let items: EnquiryItem[] = [];
+  const listeners = new Set<() => void>();
+  let loaded = false;
 
-function arraysEqual(a: EnquiryItem[], b: EnquiryItem[]): boolean {
-  if (a.length !== b.length) return false;
-  return JSON.stringify(a) === JSON.stringify(b);
-}
-
-function getStoredItems(): EnquiryItem[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      cachedItems = [];
-      return cachedItems;
-    }
-    const parsed: EnquiryItem[] = JSON.parse(saved);
-    if (cachedItems && arraysEqual(cachedItems, parsed)) {
-      return cachedItems;
-    }
-    cachedItems = parsed;
-    return cachedItems;
-  } catch {
-    cachedItems = [];
-    return cachedItems;
+  function emit() {
+    listeners.forEach((listener) => listener());
   }
+
+  function loadFromStorage() {
+    if (typeof window === "undefined" || loaded) return;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      items = saved ? JSON.parse(saved) : [];
+    } catch {
+      items = [];
+    }
+    loaded = true;
+    emit();
+  }
+
+  function saveToStorage(next: EnquiryItem[]) {
+    items = next;
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // ignore storage errors
+      }
+    }
+    emit();
+  }
+
+  function subscribe(listener: () => void) {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  }
+
+  function getSnapshot() {
+    return items;
+  }
+
+  function getServerSnapshot() {
+    return [];
+  }
+
+  return {
+    loadFromStorage,
+    saveToStorage,
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  };
 }
 
-function setStoredItems(items: EnquiryItem[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  cachedItems = items;
-  listeners.forEach((listener) => listener());
-}
-
-function subscribe(listener: Listener) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function getServerSnapshot(): EnquiryItem[] {
-  return [];
-}
+const enquiryStore = createEnquiryStore();
 
 export function EnquiryProvider({ children }: { children: React.ReactNode }) {
-  const items = useSyncExternalStore(subscribe, getStoredItems, getServerSnapshot);
+  useEffect(() => {
+    enquiryStore.loadFromStorage();
+  }, []);
+
+  const items = useSyncExternalStore(
+    enquiryStore.subscribe,
+    enquiryStore.getSnapshot,
+    enquiryStore.getServerSnapshot
+  );
 
   const addItem = useCallback((product: Product) => {
-    const current = getStoredItems();
+    const current = enquiryStore.getSnapshot();
     const existing = current.find((i) => i.id === product.id);
     let next: EnquiryItem[];
     if (existing) {
@@ -92,27 +112,27 @@ export function EnquiryProvider({ children }: { children: React.ReactNode }) {
         },
       ];
     }
-    setStoredItems(next);
+    enquiryStore.saveToStorage(next);
   }, []);
 
   const removeItem = useCallback((id: string) => {
-    const next = getStoredItems().filter((i) => i.id !== id);
-    setStoredItems(next);
+    const next = enquiryStore.getSnapshot().filter((i) => i.id !== id);
+    enquiryStore.saveToStorage(next);
   }, []);
 
   const updateQuantity = useCallback((id: string, quantity: number) => {
-    const current = getStoredItems();
+    const current = enquiryStore.getSnapshot();
     if (quantity < 1) {
-      setStoredItems(current.filter((i) => i.id !== id));
+      enquiryStore.saveToStorage(current.filter((i) => i.id !== id));
       return;
     }
-    setStoredItems(
+    enquiryStore.saveToStorage(
       current.map((i) => (i.id === id ? { ...i, quantity } : i))
     );
   }, []);
 
   const clearItems = useCallback(() => {
-    setStoredItems([]);
+    enquiryStore.saveToStorage([]);
   }, []);
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);

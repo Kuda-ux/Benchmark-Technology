@@ -113,7 +113,6 @@ export default function RootLayout({
             __html: JSON.stringify(localBusinessSchema),
           }}
         />
-        <link rel="icon" href="/logo.png" type="image/png" />
       </head>
       <body className="min-h-full flex flex-col">
         <EnquiryProvider>
