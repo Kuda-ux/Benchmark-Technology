@@ -6,9 +6,9 @@ import { BRAND, getWhatsAppUrl } from "@/lib/data";
 import { ArrowRight, ShoppingBag, MessageCircle, ShieldCheck, MapPin } from "lucide-react";
 
 const heroProducts = [
-  { src: "/images/WhatsApp Image 2026-09-22 at 12.45.54 (1).jpeg", alt: "Canon multifunction printer" },
-  { src: "/images/WhatsApp Image 2026-09-22 at 12.45.55 (1).jpeg", alt: "TP-Link wireless router" },
-  { src: "/images/WhatsApp Image 2026-09-22 at 12.45.57 (1).jpeg", alt: "Canon maintenance cartridge" },
+  { src: "/images/canon-multifunction-printer.jpg", alt: "Canon multifunction printer" },
+  { src: "/images/tp-link-router.jpg", alt: "TP-Link wireless router" },
+  { src: "/images/canon-maintenance-cartridge.jpg", alt: "Canon maintenance cartridge" },
 ];
 
 export function Hero() {
