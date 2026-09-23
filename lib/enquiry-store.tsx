@@ -26,20 +26,37 @@ const STORAGE_KEY = "benchmark-enquiry";
 
 type Listener = () => void;
 const listeners: Set<Listener> = new Set();
+let cachedItems: EnquiryItem[] | null = null;
+
+function arraysEqual(a: EnquiryItem[], b: EnquiryItem[]): boolean {
+  if (a.length !== b.length) return false;
+  return JSON.stringify(a) === JSON.stringify(b);
+}
 
 function getStoredItems(): EnquiryItem[] {
   if (typeof window === "undefined") return [];
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    if (!saved) {
+      cachedItems = [];
+      return cachedItems;
+    }
+    const parsed: EnquiryItem[] = JSON.parse(saved);
+    if (cachedItems && arraysEqual(cachedItems, parsed)) {
+      return cachedItems;
+    }
+    cachedItems = parsed;
+    return cachedItems;
   } catch {
-    return [];
+    cachedItems = [];
+    return cachedItems;
   }
 }
 
 function setStoredItems(items: EnquiryItem[]) {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  cachedItems = items;
   listeners.forEach((listener) => listener());
 }
 
